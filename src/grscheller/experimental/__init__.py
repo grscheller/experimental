@@ -13,16 +13,16 @@
 # limitations under the License.
 
 """
-### Untyped Modules
+### Experimental Modules
 
-PyPI grscheller namespace modules intended for use with less strictly typed code.
+PyPI grscheller namespace modules intended to explore potential new features.
 
-* module `grscheller.untyped.nada`
+* module grscheller.experimental.nada
 
 ---
 
 """
-__version__ = "0.4.0"
+__version__ = "0.1.0"
 __author__ = "Geoffrey R. Scheller"
 __copyright__ = "Copyright (c) 2024 Geoffrey R. Scheller"
 __license__ = "Apache License 2.0"

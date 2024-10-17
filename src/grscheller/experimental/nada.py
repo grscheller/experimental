@@ -1,4 +1,4 @@
-# Copyright 2023-2024 Geoffrey R. Scheller
+# Copyright 2024 Geoffrey R. Scheller
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 An attempt to give Python a "bottom" type.
 
-* **nada** is an attempt to give Python a "bottom" type
+* **nada** was an attempt to give Python a "bottom" type
 
 While a true bottom type has no instances, `nada` is a singleton. Python's
 evolving typing system seems to reject the concept of a true bottom type.
