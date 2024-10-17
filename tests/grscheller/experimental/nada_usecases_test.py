@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 from typing import Any
-from grscheller.untyped.nada import Nada, nada  # type: ignore
+from grscheller.experimental.nada import Nada, nada  # type: ignore
 from grscheller.circular_array.ca import CA
 
 def add2(x: int|Nada) -> int:

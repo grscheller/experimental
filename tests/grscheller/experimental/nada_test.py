@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 from typing import Optional
-from grscheller.untyped.nada import Nada, nada  # type: ignore
+from grscheller.experimental.nada import Nada, nada  # type: ignore
 
 def add2(x: int) -> int:
     return x + 2
