@@ -20,4 +20,4 @@ projects, or its own standalone project.
 
 [1]: https://pypi.org/project/grscheller.experimental/
 [2]: https://github.com/grscheller/experimental/
-[3]: https://grscheller.github.io/experimental/
+[3]: https://grscheller.github.io/grscheller-pypi-namespace-docs/experimental/
