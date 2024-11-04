@@ -120,7 +120,7 @@ class Nada():
     def __setitem__(self, index: int|slice, item: Any) -> None:
         return
 
-    def __call__(*args: Any, **kwargs: Any) -> Any:
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
         return Nada()
 
     def __getattr__(self, name: str) -> Callable[[Any], Any]:
