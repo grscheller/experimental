@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""#### Module experimental.lazy - lazy function evaluations
+"""### Module experimental.lazy - lazy function evaluations
 
 Delayed function evaluations, if needed, usually in some inner scope. FP tools
 for "non-strict" function evaluations.
 
-##### Non-strict tooling:
+#### Non-strict tooling:
 
-**class Lazy:** Delay function evaluation
+* **class Lazy:** Delay function evaluation
 
 """
 from __future__ import annotations
