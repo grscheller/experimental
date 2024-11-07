@@ -30,11 +30,10 @@ from typing import Callable, Iterator
 from grscheller.fp.err_handling import MB, XOR
 
 class Lazy[D, R]():
-    """Delayed or non-strict function evaluation.
+    """Delayed function evaluation.
 
     Class instance delays the executable of a function where `Lazy(f, ds)`
     constructs an object that can evaluate the Callable `f` at a later time.
-    Usually in the scope of some function or method call.
 
     * first argument takes a function of a variable number of arguments
     * second argument a tuple of arguments for the function `tuple[~D, ...]`
@@ -47,11 +46,13 @@ class Lazy[D, R]():
       * will first evaluate `f` with `*args` if needed
       * then, if successful, return a tuple of the resulting return values
       * otherwise, raise a RunTimeError
-        * guard against this by evaluating Lazy object in a Boolean context
+        * guard against this by Lazy object in a Boolean context
     * retrieve evaluated return values via
       * Lazy object's `__call__` method
       * Lazy object's `__iter__` method
 
+    Usually use case is to make a function "non-strict" by passing some of its
+    arguments wrapped in Lazy instances.
     """
     __slots__ = '_f', '_args', '_results', '_pure'
 
@@ -59,7 +60,7 @@ class Lazy[D, R]():
         self._f = f
         self._args = args
         self._pure = pure
-        self._results: XOR[tuple[R, ...], MB[Exception]] = XOR(right=MB())
+        self._results: XOR[tuple[R, ...], MB[Exception]] = XOR(MB(), MB())
 
     def __bool__(self) -> bool:
         return True if self._results else False
@@ -75,7 +76,7 @@ class Lazy[D, R]():
             try:
                 result = self._f(*self._args)
             except Exception as exc:
-                self._results = XOR(right=MB(exc))
+                self._results = XOR(MB(), MB(exc))
             else:
                 if isinstance(result, tuple):
                     self._results = XOR(result, MB())

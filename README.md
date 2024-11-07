@@ -12,9 +12,8 @@ projects, or its own standalone project.
 
 ### Modules
 
-* grscheller.untyped.nada
-  * singleton representing the absence of a value
-  * failed attempt to give Python a bottom type
+* grscheller.experimental.lazy
+  * Functional Programming (FP) tools for "non-strict" function evaluation.
 
 ---
 
