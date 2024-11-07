@@ -32,21 +32,24 @@ from grscheller.fp.err_handling import MB, XOR
 class Lazy[D, R]():
     """Delayed function evaluation.
 
-    Class instance delays the executable of a function where `Lazy(f, ds)`
-    constructs an object that can evaluate the Callable `f` at a later time.
+    Class instance delays the executable of a function where `Lazy(f, args)`
+    constructs an object that can evaluate the Callable `f` with its arguments
+    at a later time. The arguments to `f` are stored in the tuple `args`.
 
-    * first argument takes a function of a variable number of arguments
-    * second argument a tuple of arguments for the function `tuple[~D, ...]`
-      * where `~D` usually inferred to be a Union of the argument types
+    * first argument `f` takes a function of a variable number of arguments
+    * second argument `args` is the tuple of the arguments to be passed to `f`
+      * where the type `~D` is the `tuple` type of the argument types to `f`
     * function is evaluated when the eval method is called
-      * self._results set to `XOR[tuple[~R, ...], MB[Exception]]`
-      * where `~R` usually inferred to be a Union of the return types
-    * result is cached unless `pure` is set to `False` in initializer
+      * self._results set to `XOR[~R, MB[Exception]]`
+      * where `~R` is the `tuple` type of the return types of `f`
+    * result is cached unless `pure` is set to `False` in `__init__` method
     * class is callable with no arguments
-      * will first evaluate `f` with `*args` if needed
+      * if needed, will first evaluate `f` with its arguments
       * then, if successful, return a tuple of the resulting return values
       * otherwise, raise a RunTimeError
-        * guard against this by Lazy object in a Boolean context
+        * guard against this by
+          * first calling the eval method
+          * and then evaluating the Lazy object itself in a Boolean context
     * retrieve evaluated return values via
       * Lazy object's `__call__` method
       * Lazy object's `__iter__` method
@@ -55,8 +58,9 @@ class Lazy[D, R]():
     arguments wrapped in Lazy instances.
     """
     __slots__ = '_f', '_args', '_results', '_pure'
+    __match_args__ = '_args', '_results'
 
-    def __init__(self, f: Callable[[D], tuple[R]], *args: D, pure: bool=True) -> None:
+    def __init__(self, f: Callable[..., tuple[R]], args: D, pure: bool=True) -> None:
         self._f = f
         self._args = args
         self._pure = pure
@@ -64,6 +68,15 @@ class Lazy[D, R]():
 
     def __bool__(self) -> bool:
         return True if self._results else False
+
+    def is_evaluated(self) -> bool:
+        return self._results != XOR(MB(), MB())
+
+    def is_exceptional(self) -> bool:
+        if self.is_evaluated():
+            return False if self._results else True
+        else:
+            return False
 
     def eval(self) -> None:
         """Evaluate function with its arguments.
@@ -74,14 +87,14 @@ class Lazy[D, R]():
         """
         if not (self._results and self._pure):
             try:
-                result = self._f(*self._args)
-            except Exception as exc:
+                result = self._f(*self._args)       # TODO: Need more functional tools to get around this limitation.
+            except Exception as exc:                #       Change f to F where F is the "tuple-ized" version of f.
                 self._results = XOR(MB(), MB(exc))
             else:
                 if isinstance(result, tuple):
                     self._results = XOR(result, MB())
                 elif result is None:
-                    results = XOR((), MB())
+                    self._results = XOR((), MB())
                 else:
                     self._results = XOR((result,), MB())
 
