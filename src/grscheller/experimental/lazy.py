@@ -25,31 +25,23 @@ for "non-strict" function evaluations.
 """
 from __future__ import annotations
 
-__all__ = [ 'Lazy11', 'Lazy01' ]
+__all__ = [ 'Lazy11', 'Lazy01', 'Lazy10', 'Lazy00' ]
 
-from typing import Callable, Iterator
+from typing import Callable, Final, Iterator
 from grscheller.fp.err_handling import MB, XOR
 
 class Lazy11[D, R]():
     """Delayed evaluation of a function taking and returning single values.
 
-    Class instance delays the executable of a function where `Lazy(f, args)`
-    constructs an object that can evaluate the Callable `f` with its arguments
-    at a later time. The arguments to `f` are stored in the tuple `args`.
+    Class instance delays the executable of a function where `Lazy(f, arg)`
+    constructs an object that can evaluate the Callable `f` with its argument
+    at a later time.
 
     * first argument `f` takes a function of a variable number of arguments
     * second argument `args` is the tuple of the arguments to be passed to `f`
       * where the type `~D` is the `tuple` type of the argument types to `f`
     * function is evaluated when the eval method is called
-      * self._results set to `XOR[~R, MB[Exception]]`
-      * where `~R` is the `tuple` type of the return types of `f`
     * result is cached unless `pure` is set to `False` in `__init__` method
-    * class is iterable and callable with no arguments
-      * if needed, will first evaluate `f` with its arguments
-      * if not successful raise a RunTimeError
-        * guard against this by
-          * first calling the eval method
-          * then testing the Lazy object itself in a Boolean context
 
     Usually use case is to make a function "non-strict" by passing some of its
     arguments wrapped in Lazy instances.
@@ -58,9 +50,9 @@ class Lazy11[D, R]():
     __slots__ = '_f', '_arg', '_result', '_pure'
 
     def __init__(self, f: Callable[[D], R], arg: D, pure: bool=True) -> None:
-        self._f = f
-        self._arg = arg
-        self._pure = pure
+        self._f: Final[Callable[[D], R]] = f
+        self._arg: Final[D] = arg
+        self._pure: Final[bool] = pure
         self._result: XOR[R, MB[Exception]] = XOR(MB(), MB())
 
     def __bool__(self) -> bool:
@@ -79,10 +71,11 @@ class Lazy11[D, R]():
         return self._pure
 
     def eval(self) -> bool:
-        """Evaluate function with its arguments.
+        """Evaluate function with its argument.
 
         * evaluate function
-        * cache results or exceptions
+        * cache results or exceptions if `pure == True`
+        * reevaluate if `pure == False`
 
         """
         if not self.is_evaluated() or not self._pure:
@@ -93,8 +86,11 @@ class Lazy11[D, R]():
                 return False
             else:
                 self._result = XOR(MB(result), MB())
-
-        return True
+                return True
+        if self:
+            return True
+        else:
+            return False
 
     def result(self) -> MB[R]:
         if not self.is_evaluated():
@@ -108,31 +104,59 @@ class Lazy11[D, R]():
     def exception(self) -> MB[Exception]:
         if not self.is_evaluated():
             self.eval()
-
         return self._result.getRight()
 
 class Lazy01[R](Lazy11[None, R]):
     """Delayed evaluation of a nullary function returning a single value.
 
     Class instance delays the executable of a nullary function where `Lazy01(f)`
-    constructs an object that can evaluate the Callable `f: Callable[[]. r]`
+    constructs an object that can evaluate the Callable `f: Callable[[], R]`
     at a later time.
 
     * argument `f` takes a function taking no arguments
     * function is evaluated when the eval method is called
-      * self._results set to `XOR[~R, MB[Exception]]`
-      * where `~R` is the return type of `f`, possibly `None`
-    * result is cached unless `pure` is set to `False` in `__init__` method
-    * class is callable and iterable
-      * if needed, will first evaluate `f`
-      * if not successful raise a RunTimeError
-        * guard against this by
-          * first calling the eval method
-          * then testing the Lazy object itself in a Boolean context
+    * result is cached unless `pure` is set to `False`
 
     Usually use case is to make a function "non-strict" by passing some of its
     arguments wrapped in Lazy instances.
     """
     def __init__(self, f: Callable[[], R], pure: bool=True) -> None:
-        super().__init__(lambda n: f(), arg=None, pure=pure)
+        super().__init__(lambda _: f(), arg=None, pure=pure)
+
+class Lazy10[D](Lazy11[D, None]):
+    """Delayed evaluation of a one argument function returning None.
+
+    Class instance delays the executable of a one argument function which
+    returns no values where `Lazy00(f, arg)` constructs an object that
+    can evaluate the Callable `f: Callable[[D], None]` with its argument
+    at a later time.
+
+    * argument `f` takes a function taking one argument and returnng `None`
+    * function is evaluated when the eval method is called
+    * result is cached unless `pure` is set to `False`
+
+    Usually use case is to make a function "non-strict" by passing some of its
+    arguments wrapped in Lazy instances. 
+    """
+    def __init__(self, f: Callable[[D], None], arg: D, pure: bool=True) -> None:
+        super().__init__(f, arg, pure=pure)
+
+class Lazy00(Lazy11[tuple[()], None]):
+    """Delayed evaluation of a nullary function returning None.
+
+    Class instance delays the executable of a function taking and returning no
+    values where `Lazy00(f)` constructs an object that can evaluate the Callable
+    `f: Callable[[D]. None]` with its argument at a later time.
+
+    * argument `f` takes a function that only has side effects
+    * function is evaluated when the eval method is called
+    * result is cached unless `pure` is set to `False`
+      * setting `pure` to `True` to "initialize" only once
+      * setting `pure` to `False` redo side effects & non-pure function behavior
+
+    Usually use case is to make a function "non-strict" by passing some of its
+    arguments wrapped in Lazy instances.
+    """
+    def __init__(self, f: Callable[[], None], pure: bool=True) -> None:
+        super().__init__(lambda _: f(), arg=(), pure=pure)
 

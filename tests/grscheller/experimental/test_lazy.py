@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 from typing import Optional, Final, Never
-from grscheller.experimental.lazy import Lazy11, Lazy01
+from grscheller.experimental.lazy import Lazy11, Lazy01, Lazy10, Lazy00
 
 def add2_if_pos(x: int) -> int|Never:
     if x < 1:
@@ -35,6 +35,7 @@ class Test_Lazy11:
     def test_sad_path(self) -> None:
         assert evaluate_it(Lazy11(add2_if_pos, -42)) == -1
 
+#---------------------------------------------------------------
 
 def hello() -> str|Never:
     hello = "helloooo"
@@ -70,3 +71,106 @@ class Test_Lazy01:
         lz_bad = Lazy01(no_hello, pure=False)
         assert return_str(lz_bad) == 'Error: failed as expected'
 
+#---------------------------------------------------------------
+
+class counter():
+    def __init__(self, n: int=0) -> None:
+        self._cnt = n
+
+    def inc(self) -> None:
+        self._cnt += 1
+
+    def get(self) -> int:
+        return self._cnt
+
+    def set(self, n: int) -> None:
+        self._cnt = n
+
+class Test_Lazy00:
+    def test_pure(self) -> None:
+        cnt1 = counter(0)
+
+        lz_p = Lazy00(cnt1.inc, pure=True)
+        lz_n = Lazy00(cnt1.inc, pure=False)
+
+        if lz_p:
+            assert False
+        if lz_p.is_evaluated():
+            assert False
+        if lz_p.is_exceptional():
+            assert False
+        if lz_n:
+            assert False
+        if lz_n.is_evaluated():
+            assert False
+        if lz_n.is_exceptional():
+            assert False
+        assert cnt1.get() == 0
+        assert lz_n.eval() == True
+        assert cnt1.get() == 1
+        if lz_p:
+            assert False
+        if lz_p.is_evaluated():
+            assert False
+        if lz_p.is_exceptional():
+            assert False
+        if lz_n:
+            assert True
+        if lz_n.is_evaluated():
+            assert True
+        if lz_n.is_exceptional():
+            assert False
+        assert lz_p.eval() == True
+        assert cnt1.get() == 2
+        if lz_p:
+            assert True
+        if lz_p.is_evaluated():
+            assert True
+        if lz_p.is_exceptional():
+            assert False
+        assert lz_p.eval() == True
+        assert cnt1.get() == 2
+        assert lz_n.eval() == True
+        assert cnt1.get() == 3
+        assert lz_p.eval() == True
+        assert cnt1.get() == 3
+        assert lz_n.eval() == True
+        assert cnt1.get() == 4
+        assert lz_n.eval() == True
+        assert cnt1.get() == 5
+        assert lz_p.eval() == True
+        assert cnt1.get() == 5
+
+#---------------------------------------------------------------
+
+class Test_Lazy10:
+    def test_pure(self) -> None:
+        cnt2 = counter(0)
+
+        lz_p = Lazy10(cnt2.set, arg=2, pure=True)
+        lz_n = Lazy10(cnt2.set, arg=5, pure=False)
+
+        if lz_p:
+            assert False
+        if lz_p.is_evaluated():
+            assert False
+        if lz_p.is_exceptional():
+            assert False
+        if lz_n:
+            assert False
+        if lz_n.is_evaluated():
+            assert False
+        if lz_n.is_exceptional():
+            assert False
+        assert lz_p.eval() == True
+        assert cnt2.get() == 2
+        assert lz_n.eval() == True
+        assert cnt2.get() == 5
+        assert lz_p.eval() == True
+        assert cnt2.get() == 5
+        cnt2.inc()
+        assert cnt2.get() == 6
+        assert lz_p.eval() == True
+        assert cnt2.get() == 6
+        assert lz_n.eval() == True
+        assert cnt2.get() == 5

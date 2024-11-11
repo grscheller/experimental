@@ -2,14 +2,25 @@
 
 PyPI grscheller.untyped project.
 
-#### Semantic versioning
+#### Versioning schema
 
-* first digit - major event, epoch, or paradigm shift
-* second digit - breaking API changes, major changes
-* third digit - bug fixes, API additions, breaking API in dev env
-* forth digit - commit count changes/regressions (dev environment only)
+* first digits - always will be 0 - pre-alpha
+* second digits - addition, deletion or promotion of experimental efforts
+* third digits - commit count changes/regressions
 
 ## Releases and Important Milestones
+
+### Version 0.2.4 - Decided to go with 3 group versioning
+
+* not a PyPI release
+* middle digits change when an effort is added, removed, or moved
+* previously moved Nada to grscheller.fp.singletons
+* previously started non-strict function evaluation effort
+  * grscheller.experimental.lazy module
+
+### Version 0.1.1 - PyPI release date 2024-10-20
+
+* removed docs from repo
 
 ### Version 0.1.1 - PyPI release date 2024-10-20
 
@@ -24,5 +35,5 @@ PyPI grscheller.untyped project.
   * decided to eventually make everything strictly typed
     * hence old name quite inappropriate
   * first PyPI release is a complete clone of grscheller.untyped
-  * following PEP 423 - section "How to remain a project?"
+  * following PEP 423 - section "How to rename a project?"
   * project forever will be Pre-Alpha
