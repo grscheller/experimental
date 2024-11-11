@@ -20,12 +20,12 @@ for "non-strict" function evaluations.
 #### Non-strict tooling:
 
 * **class Lazy01:** Delayed nullary function evaluation of a single variable
-* **class Lazy11:** Delay function evaluation of a function taking one argument
+* **class Lazy:** Delay function evaluation of a function taking one argument
 
 """
 from __future__ import annotations
 
-__all__ = [ 'Lazy' ]
+__all__ = [ 'Lazy', 'Lazy01' ]
 
 from typing import Callable, Iterator
 from grscheller.fp.err_handling import MB, XOR
@@ -57,14 +57,11 @@ class Lazy[D, R]():
 
     __slots__ = '_f', '_arg', '_result', '_pure'
 
-    def __init__(self, f: Callable[[D], R], arg: D|None, pure: bool=True) -> None:
+    def __init__(self, f: Callable[[D], R], arg: D, pure: bool=True) -> None:
         self._f = f
-        if arg is None:
-            self._arg = MB[D]()
-        else:
-            self._arg = MB(arg)
+        self._arg = arg
         self._pure = pure
-        self._result: XOR[MB[R], MB[Exception]] = XOR(MB(), MB())
+        self._result: XOR[R, MB[Exception]] = XOR(MB(), MB())
 
     def __bool__(self) -> bool:
         return True if self._result else False
@@ -88,9 +85,9 @@ class Lazy[D, R]():
         * cache results or exceptions
 
         """
-        if not self._result or not self._pure:
+        if not self.is_evaluated() or not self._pure:
             try:
-                result = self._f(self._arg.get())
+                result = self._f(self._arg)
             except Exception as exc:
                 self._result = XOR(MB(), MB(exc))
                 return False
@@ -99,13 +96,20 @@ class Lazy[D, R]():
 
         return True
 
-    def __call__(self) -> R:
-        self.eval()
+    def result(self) -> MB[R]:
+        if not self.is_evaluated():
+            self.eval()
+
         if self._result:
-            return self._result.getLeft()
+            return MB(self._result.getLeft())
         else:
-            msg = f"lazy: Lazy evaluated function raised exceptions"
-            raise RuntimeError(msg)
+            return MB()
+
+    def exception(self) -> MB[Exception]:
+        if not self.is_evaluated():
+            self.eval()
+
+        return self._result.getRight()
 
 class Lazy01[R](Lazy[None, R]):
     """Delayed evaluation of a nullary function returning a single value.
