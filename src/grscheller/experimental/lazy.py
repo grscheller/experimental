@@ -25,12 +25,12 @@ for "non-strict" function evaluations.
 """
 from __future__ import annotations
 
-__all__ = [ 'Lazy', 'Lazy01' ]
+__all__ = [ 'Lazy11', 'Lazy01' ]
 
 from typing import Callable, Iterator
 from grscheller.fp.err_handling import MB, XOR
 
-class Lazy[D, R]():
+class Lazy11[D, R]():
     """Delayed evaluation of a function taking and returning single values.
 
     Class instance delays the executable of a function where `Lazy(f, args)`
@@ -111,7 +111,7 @@ class Lazy[D, R]():
 
         return self._result.getRight()
 
-class Lazy01[R](Lazy[None, R]):
+class Lazy01[R](Lazy11[None, R]):
     """Delayed evaluation of a nullary function returning a single value.
 
     Class instance delays the executable of a nullary function where `Lazy01(f)`

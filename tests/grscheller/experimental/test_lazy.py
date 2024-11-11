@@ -15,25 +15,25 @@
 from __future__ import annotations
 
 from typing import Optional, Final, Never
-from grscheller.experimental.lazy import Lazy, Lazy01
+from grscheller.experimental.lazy import Lazy11, Lazy01
 
 def add2_if_pos(x: int) -> int|Never:
     if x < 1:
         raise ValueError
     return x + 2
 
-def evaluate_it(lz: Lazy[int, int]) -> int:
+def evaluate_it(lz: Lazy11[int, int]) -> int:
     if lz.eval():
         return lz.result().get()
     else:
         return -1
 
-class Test_Lazy:
+class Test_Lazy11:
     def test_happy_path(self) -> None:
-        assert evaluate_it(Lazy(add2_if_pos, 5)) == 7
+        assert evaluate_it(Lazy11(add2_if_pos, 5)) == 7
 
     def test_sad_path(self) -> None:
-        assert evaluate_it(Lazy(add2_if_pos, -42)) == -1
+        assert evaluate_it(Lazy11(add2_if_pos, -42)) == -1
 
 
 def hello() -> str|Never:
