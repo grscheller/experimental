@@ -19,28 +19,29 @@ for "non-strict" function evaluations.
 
 #### Non-strict delayed function evaluation:
 
-* **class Lazy11:** Delay evaluation of function taking & returning single values
-* **class Lazy01:** Delay evaluation of nullary function returning a single value
-* **class Lazy10:** Delay evaluation of function taking a single value & returning no values
-* **class Lazy00:** Delay evaluation of function neither taking nor returning any values
+* class **Lazy:** Delay evaluation of function taking & returning single values
+* class **Lazy01:** Delay evaluation of nullary function returning a single value
+* class **Lazy10:** Delay evaluation of function taking a single value & returning no values
+* class **Lazy00:** Delay evaluation of function neither taking nor returning any values
+* function **lazy:** Delay evaluation of a function taking more than one value
 
 """
 from __future__ import annotations
 
 __all__ = [ 'Lazy11', 'Lazy01', 'Lazy10', 'Lazy00' ]
 
-from typing import Callable, Final, Iterator
+from typing import Any, Callable, cast, Final, Iterator
 from grscheller.fp.err_handling import MB, XOR
 
-class Lazy11[D, R]():
+class Lazy[D, R]():
     """Delayed evaluation of a function taking and returning single values.
 
     Class instance delays the executable of a function where `Lazy(f, arg)`
     constructs an object that can evaluate the Callable `f` with its argument
     at a later time.
 
-    * first argument `f` takes a function of a variable number of arguments
-    * second argument `args` is the tuple of the arguments to be passed to `f`
+    * first argument `f` takes a function of 1 argument
+    * second argument `args` is the argument to be passed to `f`
       * where the type `~D` is the `tuple` type of the argument types to `f`
     * function is evaluated when the eval method is called
     * result is cached unless `pure` is set to `False` in `__init__` method
@@ -108,7 +109,7 @@ class Lazy11[D, R]():
             self.eval()
         return self._result.getRight()
 
-class Lazy01[R](Lazy11[None, R]):
+class Lazy01[R](Lazy[None, R]):
     """Delayed evaluation of a nullary function returning a single value.
 
     Class instance delays the executable of a nullary function where `Lazy01(f)`
@@ -125,7 +126,7 @@ class Lazy01[R](Lazy11[None, R]):
     def __init__(self, f: Callable[[], R], pure: bool=True) -> None:
         super().__init__(lambda _: f(), arg=None, pure=pure)
 
-class Lazy10[D](Lazy11[D, None]):
+class Lazy10[D](Lazy[D, None]):
     """Delayed evaluation of a one argument function returning None.
 
     Class instance delays the executable of a one argument function which
@@ -143,7 +144,7 @@ class Lazy10[D](Lazy11[D, None]):
     def __init__(self, f: Callable[[D], None], arg: D, pure: bool=True) -> None:
         super().__init__(f, arg, pure=pure)
 
-class Lazy00(Lazy11[tuple[()], None]):
+class Lazy00(Lazy[tuple[()], None]):
     """Delayed evaluation of a nullary function returning None.
 
     Class instance delays the executable of a function taking and returning no
@@ -161,4 +162,31 @@ class Lazy00(Lazy11[tuple[()], None]):
     """
     def __init__(self, f: Callable[[], None], pure: bool=True) -> None:
         super().__init__(lambda _: f(), arg=(), pure=pure)
+
+def lazy[R](f: Callable[[*(tuple[Any, ...])], R],
+            args: tuple[*(tuple[Any, ...])],
+            pure: bool=True) -> Lazy[Any, R]:
+    """Delayed evaluation of a function.
+
+    Function returning a delayed evaluation of a function of an arbitrary number
+    of positional arguments.
+
+    * first argument `f` takes a function of a given number of arguments
+    * second argument `args` is the tuple of the arguments to be passed to `f`
+      * it is the programmer's responsibility to ensure that
+        * the types and number of arguments of the tuple are compatible with `f`
+    * `f` is evaluated when the returned `eval` method of the returned Lazy is called
+    * result is cached unless `pure` is set to `False`
+
+    """
+    nargs = len(args)
+    if nargs == 0:
+        return Lazy01(f, pure)
+    elif nargs == 1:
+        return Lazy(cast(Callable[[Any], R], f), args[0], pure)
+    else:
+        def fTupled(f: Callable[[*(tuple[Any, ...])], R],
+                    arguments: tuple[*(tuple[Any, ...])]) -> R:
+            return f(*arguments)
+        return Lazy(cast(Callable[[Any], R], fTupled), args, pure)
 

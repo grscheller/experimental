@@ -53,13 +53,10 @@ def swap[U,V,R](f: Callable[[U,V],R]) -> Callable[[V,U],R]:
 
 ## Tupleizing Tools
 
-# Can't get this to work no matter what I do
-#
-#   @overload
-#   def entup[R](f: Callable[[...],R]) -> Callable[[tuple[...]], tuple[R,...]]: ...
-#   
-#   @overload
-#   def entup[R](f: Callable[[...],R]) -> Callable[[tuple[...]], R]: ...
+def entup[**P, R](f: Callable[[P],R]) -> Callable[[tuple[P]], R]:
+    def F(args: tuple[P]) -> R:
+        return f(*args)
+    return F
 
 # TODO: Think I will need to use something called a ParamSpec from
 # 
