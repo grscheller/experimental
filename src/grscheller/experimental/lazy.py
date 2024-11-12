@@ -17,10 +17,12 @@
 Delayed function evaluations, if needed, usually in some inner scope. FP tools
 for "non-strict" function evaluations.
 
-#### Non-strict tooling:
+#### Non-strict delayed function evaluation:
 
-* **class Lazy01:** Delayed nullary function evaluation of a single variable
-* **class Lazy:** Delay function evaluation of a function taking one argument
+* **class Lazy11:** Delay evaluation of function taking & returning single values
+* **class Lazy01:** Delay evaluation of nullary function returning a single value
+* **class Lazy10:** Delay evaluation of function taking a single value & returning no values
+* **class Lazy00:** Delay evaluation of function neither taking nor returning any values
 
 """
 from __future__ import annotations

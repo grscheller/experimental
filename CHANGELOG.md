@@ -10,6 +10,15 @@ PyPI grscheller.untyped project.
 
 ## Releases and Important Milestones
 
+### Version 0.3.0 - New experimental module added
+
+* added experimental.functional
+  * eventually slated to become the fp.functional module
+  * while lazy is slated to be its own package
+    * the grscheller.lazy PyPI project
+* functional module developing tools for experimental.lazy
+  * will need to learn and master ParamSpec
+
 ### Version 0.2.4 - Decided to go with 3 group versioning
 
 * not a PyPI release
