@@ -23,13 +23,7 @@ Library to compose and partially apply functions.
 #### Functional utilities:
 
 * **function swap:** swap the arguments of a 2 argument function
-
----
-
-#### Tupleizing and detupleizing functions (TODO)
-
-* **function entup:** convert function to one taking a tuple of original arguments
-* **function detup:** reverse above procedure
+* **function entuple:** convert function to one taking a tuple of original arguments
 
 ---
 
@@ -54,7 +48,12 @@ def swap[U,V,R](f: Callable[[U,V],R]) -> Callable[[V,U],R]:
 ## Tupleizing Tools
 
 def entuple[**P, R](f: Callable[P, R]) -> Callable[[tuple[P.args]], R]:
+    """Tupleize a function.
+
+    Convert a function with arbitrary positional arguments to one using taking
+    a tuple of the original arguments.
+    """
     def F(arguments: tuple[*P.args]) -> R:
-        return f(*arguments)                                # mypy bug?
+        return f(*arguments)                # type: ignore # mypy bug?
     return F
 
