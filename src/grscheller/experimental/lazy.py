@@ -27,7 +27,8 @@ from __future__ import annotations
 
 __all__ = [ 'Lazy', 'lazy' ]
 
-from typing import Any, Callable, cast, Final, Iterator, overload
+from collections.abc import Callable
+from typing import Final
 from grscheller.fp.err_handling import MB, XOR
 from .function import entuple
 

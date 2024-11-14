@@ -41,7 +41,7 @@ Library to compose and partially apply functions.
 
 """
 from __future__ import annotations
-from typing import Callable, cast, Iterator, Iterable, overload
+from collections.abc import Callable, Iterator, Iterable 
 
 __all__ = [ 'swap', 'entuple' ]
 
@@ -55,6 +55,6 @@ def swap[U,V,R](f: Callable[[U,V],R]) -> Callable[[V,U],R]:
 
 def entuple[**P, R](f: Callable[P, R]) -> Callable[[tuple[P.args]], R]:
     def F(arguments: tuple[*P.args]) -> R:
-        return f(*arguments)
+        return f(*arguments)                                # mypy bug?
     return F
 
