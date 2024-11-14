@@ -14,26 +14,27 @@
 
 from __future__ import annotations
 
-from typing import Optional, Final, Never
-from grscheller.experimental.lazy import Lazy11, Lazy01, Lazy10, Lazy00
+from typing import Any, Final, Never
+from grscheller.experimental.lazy import Lazy, lazy
+from grscheller.fp.err_handling import MB, XOR
 
 def add2_if_pos(x: int) -> int|Never:
     if x < 1:
         raise ValueError
     return x + 2
 
-def evaluate_it(lz: Lazy11[int, int]) -> int:
+def evaluate_it(lz: Lazy[int, int]) -> int:
     if lz.eval():
         return lz.result().get()
     else:
         return -1
 
-class Test_Lazy11:
+class Test_Lazy:
     def test_happy_path(self) -> None:
-        assert evaluate_it(Lazy11(add2_if_pos, 5)) == 7
+        assert evaluate_it(Lazy(add2_if_pos, 5)) == 7
 
     def test_sad_path(self) -> None:
-        assert evaluate_it(Lazy11(add2_if_pos, -42)) == -1
+        assert evaluate_it(Lazy(add2_if_pos, -42)) == -1
 
 #---------------------------------------------------------------
 
@@ -50,25 +51,26 @@ def no_hello() -> str|Never:
     hello = "helloooo"
     while len(hello) > 1:
         if hello == 'hello':
-            raise RuntimeError('failed as expected')
+            raise ValueError('failed as expected')
         else:
             hello = hello[:-1]
     return hello
 
-def return_str(lz: Lazy01[str]) -> str:
+def return_str(lz: Lazy[Any, str]) -> str:
     if lz.eval():
         return lz.result().get()
     else:
         esc = lz.exception().get()
         return f'Error: {esc}'
 
-class Test_Lazy01:
+class Test_Lazy_0_1:
     def test_happy_path(self) -> None:
-        lz_good = Lazy01(hello, pure=False)
+        lz_good = lazy(hello, pure=False)
         assert return_str(lz_good) == 'hello'
 
     def test_sad_path(self) -> None:
-        lz_bad = Lazy01(no_hello, pure=False)
+        lz_bad = lazy(no_hello)
+        lz_bad = lazy(no_hello, pure=False)
         assert return_str(lz_bad) == 'Error: failed as expected'
 
 #---------------------------------------------------------------
@@ -86,12 +88,12 @@ class counter():
     def set(self, n: int) -> None:
         self._cnt = n
 
-class Test_Lazy00:
+class Test_Lazy_0_0:
     def test_pure(self) -> None:
         cnt1 = counter(0)
 
-        lz_p = Lazy00(cnt1.inc, pure=True)
-        lz_n = Lazy00(cnt1.inc, pure=False)
+        lz_p = lazy(cnt1.inc, (), pure=True)
+        lz_n = lazy(cnt1.inc, (), pure=False)
 
         if lz_p:
             assert False
@@ -143,12 +145,12 @@ class Test_Lazy00:
 
 #---------------------------------------------------------------
 
-class Test_Lazy10:
+class Test_Lazy_1_0:
     def test_pure(self) -> None:
         cnt2 = counter(0)
 
-        lz_p = Lazy10(cnt2.set, arg=2, pure=True)
-        lz_n = Lazy10(cnt2.set, arg=5, pure=False)
+        lz_p = Lazy(cnt2.set, 2, pure=True)
+        lz_n = Lazy(cnt2.set, 5, pure=False)
 
         if lz_p:
             assert False
@@ -174,3 +176,52 @@ class Test_Lazy10:
         assert cnt2.get() == 6
         assert lz_n.eval() == True
         assert cnt2.get() == 5
+
+class Test_lazy:
+    def test_Lazy_0(self) -> None:
+        def foo42() -> int:
+            return 42
+
+        def bar42() -> int:
+            raise RuntimeError('not 42')
+
+        class FooBar():
+            def __init__(self, secret: int):
+                self._secret = secret
+
+            def get_secret(self) -> int:
+                if (ret := self._secret) != 13:
+                    return ret
+                else:
+                    raise RuntimeError(13)
+
+        lz_42 = lazy(foo42, ())
+        if lz_42.eval():
+            assert lz_42.result().get(-1) == 42
+            assert lz_42.exception() == MB()
+        else:
+            assert False
+
+        lz_not_42 = lazy(bar42, ())
+        if lz_not_42.eval():
+            assert False
+        else:
+            assert lz_not_42.result().get(-1) == -1
+            assert str(lz_not_42.exception().get()) == 'not 42'
+
+        fb7 = FooBar(7)
+        lz_fb7 = lazy(fb7.get_secret, ())
+        if lz_fb7.eval():
+            assert lz_fb7.result().get(-1) == 7
+            assert lz_fb7.exception() == MB()
+        else:
+            assert False
+
+        fb13 = FooBar(13)
+        lz_fb13 = lazy(fb13.get_secret, ())
+        if lz_fb13.eval():
+            assert False
+        else:
+            assert lz_fb13.result().get(-1) == -1
+            assert str(lz_fb13.exception().get()) == '13'
+

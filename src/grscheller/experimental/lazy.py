@@ -28,9 +28,9 @@ for "non-strict" function evaluations.
 """
 from __future__ import annotations
 
-__all__ = [ 'Lazy11', 'Lazy01', 'Lazy10', 'Lazy00' ]
+__all__ = [ 'Lazy', 'lazy' ]
 
-from typing import Any, Callable, cast, Final, Iterator
+from typing import Any, Callable, cast, Final, Iterator, overload
 from grscheller.fp.err_handling import MB, XOR
 
 class Lazy[D, R]():
@@ -109,63 +109,179 @@ class Lazy[D, R]():
             self.eval()
         return self._result.getRight()
 
-class Lazy01[R](Lazy[None, R]):
-    """Delayed evaluation of a nullary function returning a single value.
+#class Lazy01[R](Lazy[None, R]):
+#    """Delayed evaluation of a nullary function returning a single value.
+#
+#    Class instance delays the executable of a nullary function where `Lazy01(f)`
+#    constructs an object that can evaluate the Callable `f: Callable[[], R]`
+#    at a later time.
+#
+#    * argument `f` takes a function taking no arguments
+#    * function is evaluated when the eval method is called
+#    * result is cached unless `pure` is set to `False`
+#
+#    Usually use case is to make a function "non-strict" by passing some of its
+#    arguments wrapped in Lazy instances.
+#    """
+#    def __init__(self, f: Callable[[], R], pure: bool=True) -> None:
+#        super().__init__(lambda _: f(), arg=None, pure=pure)
+#
+#class Lazy10[D](Lazy[D, None]):
+#    """Delayed evaluation of a one argument function returning None.
+#
+#    Class instance delays the executable of a one argument function which
+#    returns no values where `Lazy00(f, arg)` constructs an object that
+#    can evaluate the Callable `f: Callable[[D], None]` with its argument
+#    at a later time.
+#
+#    * argument `f` takes a function taking one argument and returnng `None`
+#    * function is evaluated when the eval method is called
+#    * result is cached unless `pure` is set to `False`
+#
+#    Usually use case is to make a function "non-strict" by passing some of its
+#    arguments wrapped in Lazy instances. 
+#    """
+#    def __init__(self, f: Callable[[D], None], arg: D, pure: bool=True) -> None:
+#        super().__init__(f, arg, pure=pure)
+#
+#class Lazy00(Lazy[tuple[()], None]):
+#    """Delayed evaluation of a nullary function returning None.
+#
+#    Class instance delays the executable of a function taking and returning no
+#    values where `Lazy00(f)` constructs an object that can evaluate the Callable
+#    `f: Callable[[D]. None]` with its argument at a later time.
+#
+#    * argument `f` takes a function that only has side effects
+#    * function is evaluated when the eval method is called
+#    * result is cached unless `pure` is set to `False`
+#      * setting `pure` to `True` to "initialize" only once
+#      * setting `pure` to `False` redo side effects & non-pure function behavior
+#
+#    Usually use case is to make a function "non-strict" by passing some of its
+#    arguments wrapped in Lazy instances.
+#    """
+#    def __init__(self, f: Callable[[], None], pure: bool=True) -> None:
+#        super().__init__(lambda _: f(), arg=(), pure=pure)
 
-    Class instance delays the executable of a nullary function where `Lazy01(f)`
-    constructs an object that can evaluate the Callable `f: Callable[[], R]`
-    at a later time.
+# @overload
+# def lazy[R](f: Callable[[*tuple[Any, ...]], R],
+#             args: tuple[()]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[], R],
+#             args: tuple[()]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[], R],
+#             args: tuple[()], /,
+#             pure: bool) -> Lazy[Any, R]: ...
+# 
+# @overload
+# def lazy[R](f: Callable[[*tuple[Any, ...]], R],
+#             args: tuple[Any]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[Any], R],
+#             args: tuple[Any]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[Any], R],
+#             args: tuple[Any], pure: bool) -> Lazy[Any, R]: ...
+# 
+# @overload
+# def lazy[R](f: Callable[[*tuple[Any, ...]], R],
+#             args: tuple[Any, Any]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[Any, Any], R],
+#             args: tuple[Any, Any]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[Any, Any], R],
+#             args: tuple[Any, Any], pure: bool) -> Lazy[Any, R]: ...
+# 
+# @overload
+# def lazy[R](f: Callable[[*tuple[Any, ...]], R],
+#             args: tuple[Any, Any, Any]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[Any, Any, Any], R],
+#             args: tuple[Any, Any, Any]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[Any, Any, Any], R],
+#             args: tuple[Any, Any, Any], pure: bool) -> Lazy[Any, R]: ...
+# 
+# @overload
+# def lazy[R](f: Callable[[*tuple[Any, ...]], R],
+#             args: tuple[Any, Any, Any, Any]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[Any, Any, Any, Any], R],
+#             args: tuple[Any, Any, Any, Any]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[Any, Any, Any, Any], R],
+#             args: tuple[Any, Any, Any, Any], pure: bool) -> Lazy[Any, R]: ...
+# 
+# @overload
+# def lazy[R](f: Callable[[*tuple[Any, ...]], R],
+#             args: tuple[Any, Any, Any, Any, Any]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[Any, Any, Any, Any, Any], R],
+#             args: tuple[Any, Any, Any, Any, Any]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[Any, Any, Any, Any, Any], R],
+#             args: tuple[Any, Any, Any, Any, Any], pure: bool) -> Lazy[Any, R]: ...
+# 
+# @overload
+# def lazy[R](f: Callable[[*tuple[Any, ...]], R],
+#             args: tuple[Any, Any, Any, Any, Any, Any]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[Any, Any, Any, Any, Any, Any], R],
+#             args: tuple[Any, Any, Any, Any, Any, Any]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[Any, Any, Any, Any, Any, Any], R],
+#             args: tuple[Any, Any, Any, Any, Any, Any], pure: bool) -> Lazy[Any, R]: ...
+# 
+# @overload
+# def lazy[R](f: Callable[[*tuple[Any, ...]], R],
+#             args: tuple[Any, Any, Any, Any, Any, Any, Any]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[Any, Any, Any, Any, Any, Any, Any], R],
+#             args: tuple[Any, Any, Any, Any, Any, Any, Any]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[Any, Any, Any, Any, Any, Any, Any], R],
+#             args: tuple[Any, Any, Any, Any, Any, Any, Any], pure: bool) -> Lazy[Any, R]: ...
+# 
+# @overload
+# def lazy[R](f: Callable[[*tuple[Any, ...]], R],
+#             args: tuple[Any, Any, Any, Any, Any, Any, Any, Any]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[Any, Any, Any, Any, Any, Any, Any, Any, Any], R],
+#             args: tuple[Any, Any, Any, Any, Any, Any, Any, Any, Any]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[Any, Any, Any, Any, Any, Any, Any, Any, Any], R],
+#             args: tuple[Any, Any, Any, Any, Any, Any, Any, Any, Any], pure: bool) -> Lazy[Any, R]: ...
+# 
+# @overload
+# def lazy[R](f: Callable[[*tuple[Any, ...]], R],
+#             args: tuple[Any, Any, Any, Any, Any, Any, Any, Any, Any, Any]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[Any, Any, Any, Any, Any, Any, Any, Any, Any, Any], R],
+#             args: tuple[Any, Any, Any, Any, Any, Any, Any, Any, Any, Any]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[Any, Any, Any, Any, Any, Any, Any, Any, Any, Any], R],
+#             args: tuple[Any, Any, Any, Any, Any, Any, Any, Any, Any, Any], pure: bool) -> Lazy[Any, R]: ...
+# 
+# @overload
+# def lazy[R](f: Callable[[*tuple[Any, ...]], R],
+#             args: tuple[Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any], R],
+#             args: tuple[Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any], R],
+#             args: tuple[Any, Any, Any, Any, Any, Any, Any, Any, Any, Any, Any], pure: bool) -> Lazy[Any, R]: ...
+# 
+# @overload
+# def lazy[R](f: Callable[[*tuple[Any, ...]], R],
+#             args: tuple[*(tuple[Any, ...])]) -> Lazy[Any, R]: ...
+# @overload
+# def lazy[R](f: Callable[[*tuple[Any, ...]], R],
+#             args: tuple[*(tuple[Any, ...])], pure: bool) -> Lazy[Any, R]: ...
 
-    * argument `f` takes a function taking no arguments
-    * function is evaluated when the eval method is called
-    * result is cached unless `pure` is set to `False`
-
-    Usually use case is to make a function "non-strict" by passing some of its
-    arguments wrapped in Lazy instances.
-    """
-    def __init__(self, f: Callable[[], R], pure: bool=True) -> None:
-        super().__init__(lambda _: f(), arg=None, pure=pure)
-
-class Lazy10[D](Lazy[D, None]):
-    """Delayed evaluation of a one argument function returning None.
-
-    Class instance delays the executable of a one argument function which
-    returns no values where `Lazy00(f, arg)` constructs an object that
-    can evaluate the Callable `f: Callable[[D], None]` with its argument
-    at a later time.
-
-    * argument `f` takes a function taking one argument and returnng `None`
-    * function is evaluated when the eval method is called
-    * result is cached unless `pure` is set to `False`
-
-    Usually use case is to make a function "non-strict" by passing some of its
-    arguments wrapped in Lazy instances. 
-    """
-    def __init__(self, f: Callable[[D], None], arg: D, pure: bool=True) -> None:
-        super().__init__(f, arg, pure=pure)
-
-class Lazy00(Lazy[tuple[()], None]):
-    """Delayed evaluation of a nullary function returning None.
-
-    Class instance delays the executable of a function taking and returning no
-    values where `Lazy00(f)` constructs an object that can evaluate the Callable
-    `f: Callable[[D]. None]` with its argument at a later time.
-
-    * argument `f` takes a function that only has side effects
-    * function is evaluated when the eval method is called
-    * result is cached unless `pure` is set to `False`
-      * setting `pure` to `True` to "initialize" only once
-      * setting `pure` to `False` redo side effects & non-pure function behavior
-
-    Usually use case is to make a function "non-strict" by passing some of its
-    arguments wrapped in Lazy instances.
-    """
-    def __init__(self, f: Callable[[], None], pure: bool=True) -> None:
-        super().__init__(lambda _: f(), arg=(), pure=pure)
-
-def lazy[R](f: Callable[[*(tuple[Any, ...])], R],
-            args: tuple[*(tuple[Any, ...])],
-            pure: bool=True) -> Lazy[Any, R]:
+def lazy[R](f: Callable[[*tuple[Any, ...]], R], *args: Any, pure: bool=True) -> Lazy[Any, R]:
     """Delayed evaluation of a function.
 
     Function returning a delayed evaluation of a function of an arbitrary number
@@ -179,14 +295,10 @@ def lazy[R](f: Callable[[*(tuple[Any, ...])], R],
     * result is cached unless `pure` is set to `False`
 
     """
-    nargs = len(args)
-    if nargs == 0:
-        return Lazy01(f, pure)
-    elif nargs == 1:
-        return Lazy(cast(Callable[[Any], R], f), args[0], pure)
-    else:
-        def fTupled(f: Callable[[*(tuple[Any, ...])], R],
-                    arguments: tuple[*(tuple[Any, ...])]) -> R:
-            return f(*arguments)
-        return Lazy(cast(Callable[[Any], R], fTupled), args, pure)
+    def ft(f: Callable[[*tuple[Any, ...]], R]) -> Callable[[tuple[Any]], R]:
+        def fa(args: tuple[Any, ...]) -> R:
+            return f(*args)
+        return fa
+
+    return Lazy(ft(f), args, pure=pure)
 
