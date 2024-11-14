@@ -18,7 +18,7 @@ from typing import Any, Final, Never
 from grscheller.experimental.lazy import Lazy, lazy
 from grscheller.fp.err_handling import MB, XOR
 
-def add2_if_pos(x: int) -> int|Never:
+def add2_if_pos(x: int) -> int:
     if x < 1:
         raise ValueError
     return x + 2
@@ -38,7 +38,7 @@ class Test_Lazy:
 
 #---------------------------------------------------------------
 
-def hello() -> str|Never:
+def hello() -> str:
     hello = "helloooo"
     while len(hello) > 1:
         if hello == 'hello':
@@ -47,7 +47,7 @@ def hello() -> str|Never:
             hello = hello[:-1]
     raise ValueError('hello')
 
-def no_hello() -> str|Never:
+def no_hello() -> str:
     hello = "helloooo"
     while len(hello) > 1:
         if hello == 'hello':
@@ -69,7 +69,6 @@ class Test_Lazy_0_1:
         assert return_str(lz_good) == 'hello'
 
     def test_sad_path(self) -> None:
-        lz_bad = lazy(no_hello)
         lz_bad = lazy(no_hello, pure=False)
         assert return_str(lz_bad) == 'Error: failed as expected'
 
@@ -143,8 +142,6 @@ class Test_Lazy_0_0:
         assert lz_p.eval() == True
         assert cnt1.get() == 5
 
-#---------------------------------------------------------------
-
 class Test_Lazy_1_0:
     def test_pure(self) -> None:
         cnt2 = counter(0)
@@ -177,8 +174,10 @@ class Test_Lazy_1_0:
         assert lz_n.eval() == True
         assert cnt2.get() == 5
 
+#---------------------------------------------------------------
+
 class Test_lazy:
-    def test_Lazy_0(self) -> None:
+    def test_lazy_0(self) -> None:
         def foo42() -> int:
             return 42
 
