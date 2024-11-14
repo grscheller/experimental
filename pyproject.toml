@@ -12,16 +12,22 @@ readme = "README.md"
 requires-python = ">=3.12"
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
-    "Programming Language :: Python :: 3",
+    "Framework :: Pytest",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
-    "License :: OSI Approved :: Apache Software License"
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Typing :: Typed"
 ]
-dependencies = []
+dependencies = [
+    "grscheller.fp >= 1.1.0, < 1.2"
+]
 dynamic = ["version", "description"]
-keywords = ["bottom", "nothing"]
+keywords = ["lazy", "non-strict"]
 
 [project.optional-dependencies]
-test = ["pytest >=7.4", "grscheller.circular-array >=3.6.0, <3.7"]
+test = [ "pytest >=8.3" ]
 
 [project.urls]
 Source = "https://github.com/grscheller/experimental"
@@ -39,9 +45,18 @@ report_progress = true
 
 [tool.mypy]
 enable_incomplete_feature = ["NewGenericSyntax"]
+implicit_reexport = false
+local_partial_types = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+consider_namespace_packages = true
 
 [tool.ruff]
-target-version = "py312"
+target-version = "py313"
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]

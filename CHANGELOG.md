@@ -1,6 +1,6 @@
 # CHANGELOG
 
-PyPI grscheller.untyped project.
+PyPI grscheller.experimental project.
 
 #### Versioning schema
 
@@ -10,11 +10,16 @@ PyPI grscheller.untyped project.
 
 ## Releases and Important Milestones
 
+### Version 0.3.X - PyPI release date 2024-11-??
+
+* preparing to migrate
+  * experimental.lazy 
+
 ### Version 0.3.0 - New experimental module added
 
 * added experimental.functional
-  * eventually slated to become the fp.functional module
-  * while lazy is slated to be its own package
+  * eventually slated to become the fp.function module
+  * while lazy is slated to become fp.lazy
     * the grscheller.lazy PyPI project
 * functional module developing tools for experimental.lazy
   * will need to learn and master ParamSpec
