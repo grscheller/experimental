@@ -92,8 +92,8 @@ class Test_Lazy_0_0:
     def test_pure(self) -> None:
         cnt1 = counter(0)
 
-        lz_p = lazy(cnt1.inc, (), pure=True)
-        lz_n = lazy(cnt1.inc, (), pure=False)
+        lz_p = lazy(cnt1.inc, pure=True)
+        lz_n = lazy(cnt1.inc, pure=False)
 
         if lz_p:
             assert False
@@ -195,14 +195,14 @@ class Test_lazy:
                 else:
                     raise RuntimeError(13)
 
-        lz_42 = lazy(foo42, ())
+        lz_42 = lazy(foo42)
         if lz_42.eval():
             assert lz_42.result().get(-1) == 42
             assert lz_42.exception() == MB()
         else:
             assert False
 
-        lz_not_42 = lazy(bar42, ())
+        lz_not_42 = lazy(bar42)
         if lz_not_42.eval():
             assert False
         else:
@@ -210,7 +210,7 @@ class Test_lazy:
             assert str(lz_not_42.exception().get()) == 'not 42'
 
         fb7 = FooBar(7)
-        lz_fb7 = lazy(fb7.get_secret, ())
+        lz_fb7 = lazy(fb7.get_secret)
         if lz_fb7.eval():
             assert lz_fb7.result().get(-1) == 7
             assert lz_fb7.exception() == MB()
@@ -218,7 +218,7 @@ class Test_lazy:
             assert False
 
         fb13 = FooBar(13)
-        lz_fb13 = lazy(fb13.get_secret, ())
+        lz_fb13 = lazy(fb13.get_secret)
         if lz_fb13.eval():
             assert False
         else:
