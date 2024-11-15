@@ -24,6 +24,7 @@ Library to compose and partially apply functions.
 
 * **function swap:** swap the arguments of a 2 argument function
 * **function entuple:** convert function to one taking a tuple of original arguments
+* **function partial1:** partially apply first element to a function
 
 ---
 
@@ -36,6 +37,7 @@ Library to compose and partially apply functions.
 """
 from __future__ import annotations
 from collections.abc import Callable, Iterator, Iterable
+from typing import cast
 
 __all__ = [ 'swap', 'entuple', 'partial' ]
 
@@ -46,26 +48,26 @@ def swap[U,V,R](f: Callable[[U,V],R]) -> Callable[[V,U],R]:
     return (lambda v,u: f(u,v))
 
 def entuple[**P, R](f: Callable[P, R]) -> Callable[[tuple[P.args]], R]:
-    """Tupleize a function.
+    """Tuple-ize a function.
 
     Convert a function with arbitrary positional arguments to one using taking
     a tuple of the original arguments.
     """
     def F(arguments: tuple[*P.args]) -> R:
-        return f(*arguments)                # type: ignore # mypy bug?
-    return F
+        return f(*arguments)
+
+    return cast(Callable[[tuple[*P.args]], R], F)
 
 ## Partially apply arguments to a function
 
-def partial[**P, R](f: Callable[P, R], a: P.args[0]) -> Callable[P.args[1:], R]:
+def partial1[**P, R](f: Callable[P, R], a: P.args[0]) -> Callable[P.args[1:], R]:
     fT = entuple(f)
 
-    def foo(tT: Callable[tuple[*P.args], R], first: P.args[0]) -> Callable[P.args[1:], R]:
-        return (lambda restT: tT((first,) + restT))
+    def apply(funcT: Callable[..., R], first: P.args[0], /) -> Callable[P.args[1:], R]:
+        return (lambda restT: funcT((first,) + restT))
 
-    def baz(*bs: *P.args[1:]) -> R:
-        return foo(fT, a)(bs)  # type: ignore # do I have to turn on other mypy options???
+    def wrap(*bs: *P.args[1:], fn: Callable[..., R]=apply) -> R:
+        return cast(R, apply(fT, a)(bs))
 
-    return baz
-
+    return wrap
 
