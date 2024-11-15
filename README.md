@@ -14,6 +14,8 @@ projects, or its own standalone project.
 
 * grscheller.experimental.lazy
   * Functional Programming (FP) tools for "non-strict" function evaluation.
+* grscheller.experimental.function
+  * FP Tools to manipulate and partially apply functions
 
 ---
 

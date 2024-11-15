@@ -20,7 +20,7 @@ Library to compose and partially apply functions.
   * functools is more about decorating functions
   * fp.functional are tools which treat functions as first class objects
 
-#### Functional utilities:
+#### FP utilities to manipulate function arguments return values:
 
 * **function swap:** swap the arguments of a 2 argument function
 * **function entuple:** convert function to one taking a tuple of original arguments
@@ -35,17 +35,15 @@ Library to compose and partially apply functions.
 
 """
 from __future__ import annotations
-from collections.abc import Callable, Iterator, Iterable 
+from collections.abc import Callable, Iterator, Iterable
 
-__all__ = [ 'swap', 'entuple' ]
+__all__ = [ 'swap', 'entuple', 'partial' ]
 
 ## Functional Utilities
 
 def swap[U,V,R](f: Callable[[U,V],R]) -> Callable[[V,U],R]:
     """Swap arguments of a two argument function."""
     return (lambda v,u: f(u,v))
-
-## Tupleizing Tools
 
 def entuple[**P, R](f: Callable[P, R]) -> Callable[[tuple[P.args]], R]:
     """Tupleize a function.
@@ -56,4 +54,18 @@ def entuple[**P, R](f: Callable[P, R]) -> Callable[[tuple[P.args]], R]:
     def F(arguments: tuple[*P.args]) -> R:
         return f(*arguments)                # type: ignore # mypy bug?
     return F
+
+## Partially apply arguments to a function
+
+def partial[**P, R](f: Callable[P, R], a: P.args[0]) -> Callable[P.args[1:], R]:
+    fT = entuple(f)
+
+    def foo(tT: Callable[tuple[*P.args], R], first: P.args[0]) -> Callable[P.args[1:], R]:
+        return (lambda restT: tT((first,) + restT))
+
+    def baz(*bs: *P.args[1:]) -> R:
+        return foo(fT, a)(bs)  # type: ignore # do I have to turn on other mypy options???
+
+    return baz
+
 
