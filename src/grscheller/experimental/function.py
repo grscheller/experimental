@@ -17,29 +17,21 @@
 Library to compose and partially apply functions.
 
 * not a replacement for the std library functools
-  * functools is more about decorating functions
-  * fp.functional are tools which treat functions as first class objects
+  * functools is more about decorating functions to modify their behavior
+  * experimental.function provides tools to manipulate functions as values
 
 #### FP utilities to manipulate function arguments return values:
 
-* **function swap:** swap the arguments of a 2 argument function
-* **function entuple:** convert function to one taking a tuple of original arguments
-* **function partial1:** partially apply first element to a function
-
----
-
-#### Partially apply function arguments
-
-* **function partial:** returns a partially applied function
-
----
+* function **swap:** swap the arguments of a 2 argument function
+* function **sequenced:** convert function to one taking a sequence of its arguments
+* function **partial:** returns a partially applied function
 
 """
 from __future__ import annotations
-from collections.abc import Callable, Iterator, Iterable
-from typing import cast
+from collections.abc import Callable, Iterator, Iterable, Sequence
+from typing import Any, cast
 
-__all__ = [ 'swap', 'entuple', 'partial' ]
+__all__ = [ 'swap', 'sequenced', 'partial', 'partial1' ]
 
 ## Functional Utilities
 
@@ -47,27 +39,29 @@ def swap[U,V,R](f: Callable[[U,V],R]) -> Callable[[V,U],R]:
     """Swap arguments of a two argument function."""
     return (lambda v,u: f(u,v))
 
-def entuple[**P, R](f: Callable[P, R]) -> Callable[[tuple[P.args]], R]:
-    """Tuple-ize a function.
-
-    Convert a function with arbitrary positional arguments to one using taking
-    a tuple of the original arguments.
+def sequenced[R](f: Callable[..., R]) -> Callable[..., R]:
+    """Convert a function with arbitrary positional arguments to one taking
+    a sequence of the original arguments.
     """
-    def F(arguments: tuple[*P.args]) -> R:
+    def F(arguments: Sequence[Any]) -> R:
         return f(*arguments)
+    return F
 
-    return cast(Callable[[tuple[*P.args]], R], F)
+def partial[R](f: Callable[..., R], *args: Any) -> Callable[..., R]:
+    """Partially apply arguments to a function, left to right.
 
-## Partially apply arguments to a function
+    * type-wise the only thing guaranteed is the return value
+    * best practice is to either
+      * use `partial` and `sequenced` results immediately and locally
+      * otherwise cast the results when they are created
 
-def partial1[**P, R](f: Callable[P, R], a: P.args[0]) -> Callable[P.args[1:], R]:
-    fT = entuple(f)
+    """
 
-    def apply(funcT: Callable[..., R], first: P.args[0], /) -> Callable[P.args[1:], R]:
-        return (lambda restT: funcT((first,) + restT))
+    def apply(fn_seq: Callable[..., R], vals: Sequence[Any]) -> Callable[..., R]:
+        return (lambda restT: fn_seq(vals + restT))
 
-    def wrap(*bs: *P.args[1:], fn: Callable[..., R]=apply) -> R:
-        return cast(R, apply(fT, a)(bs))
+    def wrap(*bs: Any) -> R:
+        return apply(sequenced(f), args)(bs)
 
     return wrap
 
