@@ -13,14 +13,15 @@
 # limitations under the License.
 
 """
-### Experimental Modules
+### Experimental Modules - OBSOLETED
 
 PyPI grscheller namespace modules intended to explore potential new features.
+Decommissioned as it own PyPI project 12/15/2024
 
 ---
 
 """
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 __author__ = "Geoffrey R. Scheller"
 __copyright__ = "Copyright (c) 2024 Geoffrey R. Scheller"
 __license__ = "Apache License 2.0"

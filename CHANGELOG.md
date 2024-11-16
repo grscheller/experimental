@@ -5,8 +5,8 @@ PyPI grscheller.experimental project.
 #### Versioning schema
 
 * first digits - always 0 to represent a perpetual pre-alpha state
-* second digits - last PyPI release
-* third digits - commit count since last PyPI release
+* second digits - new direction taken
+* third digits - commit count since last new direction
 
 ## Releases and Important Milestones
 
