@@ -30,7 +30,7 @@ __all__ = [ 'Lazy', 'lazy' ]
 from collections.abc import Callable
 from typing import Final
 from grscheller.fp.err_handling import MB, XOR
-from .function import entuple
+from grscheller.fp.function import sequenced
 
 class Lazy[D, R]():
     """Delayed evaluation of a function mapping a value of type D
@@ -122,5 +122,5 @@ def lazy[R, **P](f: Callable[P, R], *args: P.args, pure: bool=True) -> Lazy[tupl
         * when arguments are or contain shared references
 
     """
-    return Lazy(entuple(f), args, pure=pure)
+    return Lazy(sequenced(f), args, pure=pure)
 
