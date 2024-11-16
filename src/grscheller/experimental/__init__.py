@@ -17,12 +17,10 @@
 
 PyPI grscheller namespace modules intended to explore potential new features.
 
-* module grscheller.experimental.nada
-
 ---
 
 """
-__version__ = "0.3.6"
+__version__ = "0.4.0"
 __author__ = "Geoffrey R. Scheller"
 __copyright__ = "Copyright (c) 2024 Geoffrey R. Scheller"
 __license__ = "Apache License 2.0"

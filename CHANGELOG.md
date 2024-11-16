@@ -4,23 +4,31 @@ PyPI grscheller.experimental project.
 
 #### Versioning schema
 
-* first digits - always will be 0 - pre-alpha
-* second digits - addition, deletion or promotion of experimental efforts
-* third digits - commit count changes/regressions
+* first digits - always 0 to represent a perpetual pre-alpha state
+* second digits - last PyPI release
+* third digits - commit count since last PyPI release
 
 ## Releases and Important Milestones
 
-### Version 0.3.X - PyPI release date 2024-11-??
+### Version 
 
-* preparing to migrate
-  * experimental.lazy 
+### Version 0.4.0 - PyPI release date 2024-10-20
+
+* LAST PYPI RELEASE!!!
+  * as a PyPI project grscheller.experimental will be OBSOLETED
+  * the GitHub repo will continue
+* migrated experimental.function to fp.functional
+* `experimental.lazy` will be refactored for `fp.err_handling`
+  * (f, arg1, arg2, arg3) is very well typed
+  * may be base a lazy evaluation package around it
+    * where argn: T|Lazy
 
 ### Version 0.3.0 - New experimental module added
 
 * added experimental.functional
-  * eventually slated to become the fp.function module
-  * while lazy is slated to become fp.lazy
-    * the grscheller.lazy PyPI project
+  * eventually slated to become the `fp.function` module
+  * while lazy is tentatively slated to become `fp.lazy`
+    * the `grscheller.lazy` PyPI project
 * functional module developing tools for experimental.lazy
   * will need to learn and master ParamSpec
 
@@ -28,13 +36,9 @@ PyPI grscheller.experimental project.
 
 * not a PyPI release
 * middle digits change when an effort is added, removed, or moved
-* previously moved Nada to grscheller.fp.singletons
+* previously moved Nada to `grscheller.fp.singletons`
 * previously started non-strict function evaluation effort
-  * grscheller.experimental.lazy module
-
-### Version 0.1.1 - PyPI release date 2024-10-20
-
-* removed docs from repo
+  * `grscheller.experimental.lazy` module
 
 ### Version 0.1.1 - PyPI release date 2024-10-20
 

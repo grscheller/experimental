@@ -1,21 +1,13 @@
 # Experimental features for the grscheller PyPI namespace
 
-Project will forever be Pre-Alpha. If a feature matures it will be
-migrated to another grscheller project, become another of the namespace
-projects, or its own standalone project.
+Repo for testing out experimental features for the grscheller namespace
+PyPI projects.
 
 * **Repositories**
   * [grscheller.experimental][1] project on *PyPI*
   * [Source code][2] on *GitHub*
 * **Detailed documentation**
   * [Detailed API documentation][3] on *GH-Pages*
-
-### Modules
-
-* grscheller.experimental.lazy
-  * Functional Programming (FP) tools for "non-strict" function evaluation.
-* grscheller.experimental.function
-  * FP Tools to manipulate and partially apply functions
 
 ---
 
