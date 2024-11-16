@@ -1,16 +1,14 @@
-# Experimental features for the grscheller PyPI namespace
+# Experimental efforts for PyPI grscheller namespace projects
 
 Repo for testing out experimental features for the grscheller namespace
-PyPI projects.
+PyPI projects. NOT a PyPI project itself.
 
-* **Repositories**
-  * [grscheller.experimental][1] project on *PyPI*
-  * [Source code][2] on *GitHub*
+* **Repository**
+  * [Source code][1] on *GitHub*
 * **Detailed documentation**
-  * [Detailed API documentation][3] on *GH-Pages*
+  * [Detailed API documentation][2] on *GH-Pages*
 
 ---
 
-[1]: https://pypi.org/project/grscheller.experimental/
-[2]: https://github.com/grscheller/experimental/
-[3]: https://grscheller.github.io/grscheller-pypi-namespace-docs/experimental/
+[1]: https://github.com/grscheller/experimental/
+[2]: https://grscheller.github.io/grscheller-pypi-namespace-docs/experimental/
