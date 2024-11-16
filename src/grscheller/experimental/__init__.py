@@ -21,7 +21,7 @@ Decommissioned as it own PyPI project 12/15/2024
 ---
 
 """
-__version__ = "0.4.1"
+__version__ = "0.5.0"
 __author__ = "Geoffrey R. Scheller"
 __copyright__ = "Copyright (c) 2024 Geoffrey R. Scheller"
 __license__ = "Apache License 2.0"
